@@ -1,0 +1,10 @@
+Never Do this
+            db.collection.findOne({_id:"efesesffsgrf2325sdefwe"},(err,res)=>{});
+    It will return null
+
+    Use it rather
+        db.collection.findOne({_id:ObjectId("efesesffsgrf2325sdefwe")})
+        It will show the relevant result
+
+
+
