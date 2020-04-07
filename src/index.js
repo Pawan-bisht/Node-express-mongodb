@@ -46,7 +46,7 @@ app.get("/tasks",async (req,res)=>{
     }
     catch(e)
     {
-        res.status(400).send(e);
+        res.status(500).send(e);
     }
     // Task.find({})
     // .then(task=>{
@@ -157,6 +157,26 @@ app.get("/users",async (req,res)=>{
     //     res.status(400);
     //     res.send(err);
     // })
+})
+
+app.patch("/users/:id",async (req,res)=>{
+    let updates = Object.keys(req.body);
+    const allowedUpdates = ["name", "age", "email", "password"];
+    let isValid = updates.every(update=> allowedUpdates.includes(update));
+    if(!isValid)
+        return res.status(400).send({err:"INVALID UPDATES"});
+    let _id = req.params.id;
+    console.log(req.body);
+    try{
+        const user = await User.findByIdAndUpdate(_id,req.body,{ new:true, runValidators:true });
+        console.log(user);
+        if(!user)
+            return res.status(404).send();    
+        res.send(user);
+    }
+    catch(e){
+        res.status(500).send(e);
+    }
 })
 
 
