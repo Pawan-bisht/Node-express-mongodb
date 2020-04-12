@@ -14,6 +14,10 @@ const taskSchema = new mongoose.Schema({
     }
 })
 
+taskSchema.pre('save',function(next){
+    const task = this;
+    next();
+})
 const TaskModel = new mongoose.model('Task',taskSchema);
 
 module.exports = TaskModel;

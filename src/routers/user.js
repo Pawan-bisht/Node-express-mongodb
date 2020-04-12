@@ -55,6 +55,19 @@ router.get("/users/:id",async (req,res)=>{
     // })
 })
 
+router.post("/users/login",async (req,res)=>{
+    try{
+        const isMatch = await User.findByCredentials(req.body.email,req.body.password);
+        res.send(isMatch); 
+    }
+    catch(e)
+    {
+        console.log(e);
+        res.status(400).send(e);
+    }
+})
+
+
 router.get("/users",async (req,res)=>{
     
     try{
@@ -80,13 +93,22 @@ router.patch("/users/:id",async (req,res)=>{
     let updates = Object.keys(req.body);
     const allowedUpdates = ["name", "age", "email", "password"];
     let isValid = updates.every(update=> allowedUpdates.includes(update));
+
     if(!isValid)
         return res.status(400).send({err:"INVALID UPDATES"});
     let _id = req.params.id;
     console.log(req.body);
+
     try{
-        const user = await User.findByIdAndUpdate(_id,req.body,{ new:true, runValidators:true });
-        console.log(user);
+        //const user = await User.findByIdAndUpdate(_id,req.body,{ new:true, runValidators:true });
+        
+        const user = await User.findById(_id);
+        updates.forEach((update) => {
+            user[update] = req.body[update];
+        })
+        await user.save();
+
+
         if(!user)
             return res.status(404).send();    
         res.send(user);
