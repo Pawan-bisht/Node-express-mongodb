@@ -40,26 +40,48 @@ const userSchema = new mongoose.Schema({
             if(!validator.isLength(value,{min:8}))
             throw new Error("Password length must be atleast 8 characters");
         }
-    }
+    },
+    tokens:[{
+        token:{
+            type:String,
+            required:true
+        }
+    }]
 })          
+const jwt = require("jsonwebtoken");
+userSchema.methods.generateAuthToken = async function()
+{
+    //This "methods" method applied on instances of object of model or instance methods
+    const user = this;
+    const token = jwt.sign({ _id:user._id.toString()},"this-is-the-secret-key");
+    user.tokens = user.tokens.concat({ token }); 
+    await user.save();
+    return token;
+}
 
-userSchema.statics.findByCredentials = async(email, password)=>{
+
+userSchema.statics.findByCredentials = async(email, password)=>{     
+    //This is a "static" method is applied/accessible on model sometimes called model methods
+    console.log(email,password);
     const user = await User.findOne({ email });
+
+    //User is the same name as the model name
+    console.log("We are inside of statics",user)
     if(!user)
     {
         throw new Error("Unable to login!");
     }
-    console.log("user:  ",email);
-
-    let isMatch = await bcrypt.compare(password,user.password);
+    
+    let isMatch = await bcrypt.hash(password,8);
     console.log(isMatch);
+    let res = isMatch == user.password;
+    console.log("the result is",res);
     if(!isMatch)
     {
         throw new Error("Email or Password is Invalid");
     }
-    
-    return user;
 
+    return user;
 }
 
 userSchema.pre('save',async function(next){
