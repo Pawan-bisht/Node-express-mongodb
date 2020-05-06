@@ -8,10 +8,16 @@ const taskSchema = new mongoose.Schema({
         required:[true,"Description is required to enter"],
         trim:true
     },
-    completed:{
+    completed: {
         type:Boolean,
         default:false,
+    },
+    owner : {
+        type : mongoose.Schema.Types.ObjectId,
+        required : true,
+        ref : 'User'
     }
+    
 })
 
 taskSchema.pre('save',function(next){

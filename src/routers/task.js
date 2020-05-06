@@ -1,9 +1,10 @@
 const express = require("express");
-const Task = require("../models/task");
-const router = express.Router();
+const Task    = require("../models/task");
+const router  = express.Router();
+const auth    = require("../middleware/auth");
 
-router.post("/task",async (req,res)=>{
-    let task = new Task(req.body);
+router.post("/task", auth, async (req,res)=>{
+    // let task = new Task(req.body);
     
     //As the await resolve our promise for us We dont need to explicitly resolve it
     //So now that we have this in place we have refactor it out they need to use 
@@ -11,6 +12,11 @@ router.post("/task",async (req,res)=>{
 
     //our functions.
     
+    const task = new Task({
+        ...req.body,
+        owner : req.user._id
+    })
+
     try{
         await task.save();
         res.status(201).send(task);        

@@ -7,10 +7,10 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-app.use((req, res, next) =>{
-    return res.status(503).send("Our Site is in a mintinence phase!!!");
+// app.use((req, res, next) =>{
+//     return res.status(503).send("Our Site is in a mintinence phase!!!");
    
-})
+// })
 
 
 app.use(express.json());
@@ -19,21 +19,21 @@ app.use(taskRouter);
 
 const bcrypt = require("bcrypt");
 
-const hashedPassword = async () =>{
-    const password = "Red@1234";
-    const genSalt = await bcrypt.genSalt(10);
-    console.log(genSalt);
-    const hashPassword = await bcrypt.hash(password, genSalt);
-    console.log(hashPassword);
+// const hashedPassword = async () =>{
+//     const password = "Red@1234";
+//     const genSalt = await bcrypt.genSalt(10);
+//     console.log(genSalt);
+//     const hashPassword = await bcrypt.hash(password, genSalt);
+//     console.log(hashPassword);
 
 
-    const plaintext = "Red@1234";
-    const result = await bcrypt.hash(plaintext,genSalt);
-    if(result === hashPassword)
-        console.log("yes they are equal");
-}
+//     const plaintext = "Red@1234";
+//     const result = await bcrypt.hash(plaintext,genSalt);
+//     if(result === hashPassword)
+//         console.log("yes they are equal");
+// }
 
-hashedPassword();
+// hashedPassword();
 
 
 // const jwt = require("jsonwebtoken");
@@ -49,4 +49,18 @@ hashedPassword();
 
 app.listen(port,()=>{
     console.log("server running at ",port);
-})
+});
+
+
+const taskModel = require("./models/task");
+const userModel = require("./models/user");
+const main = async ()=>{
+    // const task = await taskModel.findById("5eb2faee0bc8ecf4f1959ef0");
+    // await task.populate("owner").execPopulate(); 
+    //  console.log(task);
+
+    const user = await userModel.findById("5eb2fa7c0bc8ecf4f1959eee");
+    await user.populate("tasks").execPopulate();
+    console.log(user.tasks);
+}
+main();

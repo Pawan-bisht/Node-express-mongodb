@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const userSchema = new mongoose.Schema({
     name:{
         type:String,
@@ -48,7 +50,30 @@ const userSchema = new mongoose.Schema({
         }
     }]
 })          
-const jwt = require("jsonwebtoken");
+
+//For reverse backtraking of user to task, we use virutal functions
+//This will not stored in database but it will tell u the relationship with other table
+
+userSchema.virtual('tasks', {
+    ref : 'Task',
+    localField : '_id',
+    foreignField: 'owner'
+})
+
+
+userSchema.methods.toJSON = function()
+{
+    //  "toJSON" name is very signigicant because in this toJSON will giva a function to na object 
+    // and can update or delete an object 
+    let user = this;
+    let userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.tokens;
+    // user.password = undefined;
+    // user.tokens = undefined;
+    return userObject;
+}
+
 userSchema.methods.generateAuthToken = async function()
 {
     //This "methods" method applied on instances of object of model or instance methods
@@ -62,20 +87,20 @@ userSchema.methods.generateAuthToken = async function()
 
 userSchema.statics.findByCredentials = async(email, password)=>{     
     //This is a "static" method is applied/accessible on model sometimes called model methods
-    console.log(email,password);
+    // console.log(email,password);
     const user = await User.findOne({ email });
 
     //User is the same name as the model name
-    console.log("We are inside of statics",user)
+    // console.log("We are inside of statics",user)
     if(!user)
     {
         throw new Error("Unable to login!");
     }
     
-    let isMatch = await bcrypt.hash(password,8);
-    console.log(isMatch);
-    let res = isMatch == user.password;
-    console.log("the result is",res);
+    let isMatch = await bcrypt.compare(password,user.password);
+    // console.log(isMatch);
+    // let res = isMatch === user.password;
+    // console.log("the result is",res);
     if(!isMatch)
     {
         throw new Error("Email or Password is Invalid");
@@ -93,6 +118,6 @@ userSchema.pre('save',async function(next){
     next();
 })
 
-const User = new mongoose.model('User',userSchema);   
+const User = new mongoose.model('User', userSchema);
 
 module.exports = User;
