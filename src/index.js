@@ -52,15 +52,15 @@ app.listen(port,()=>{
 });
 
 
-const taskModel = require("./models/task");
-const userModel = require("./models/user");
-const main = async ()=>{
-    // const task = await taskModel.findById("5eb2faee0bc8ecf4f1959ef0");
-    // await task.populate("owner").execPopulate(); 
-    //  console.log(task);
+// const taskModel = require("./models/task");
+// const userModel = require("./models/user");
+// const main = async ()=>{
+//     // const task = await taskModel.findById("5eb2faee0bc8ecf4f1959ef0");
+//     // await task.populate("owner").execPopulate(); 
+//     //  console.log(task);
 
-    const user = await userModel.findById("5eb2fa7c0bc8ecf4f1959eee");
-    await user.populate("tasks").execPopulate();
-    console.log(user.tasks);
-}
-main();
+//     const user = await userModel.findById("5eb2fa7c0bc8ecf4f1959eee");
+//     await user.populate("tasks").execPopulate();
+//     // console.log(user.tasks);
+// }
+// main();

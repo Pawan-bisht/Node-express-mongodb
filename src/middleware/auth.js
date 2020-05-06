@@ -7,7 +7,7 @@ const auth = async (req, res,next) =>{
         // console.log("Result we are at", token);
         const decodedToken = jwt.verify(token, "this-is-the-secret-key");
         const user = await User.findOne({ _id : decodedToken._id, 'tokens.token':token});
-        console.log("WE are here",user);
+        // console.log("WE are here",user);
         if(!user)
         {
             throw new Error("INVALID AUTH TOKEN");
