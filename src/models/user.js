@@ -49,7 +49,10 @@ const userSchema = new mongoose.Schema({
             required:true
         }
     }]
-})          
+} ,
+    {
+        timestamps:true
+    })          
 
 //For reverse backtraking of user to task, we use virutal functions
 //This will not stored in database but it will tell u the relationship with other table

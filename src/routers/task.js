@@ -38,12 +38,23 @@ router.post("/task", auth, async (req,res)=>{
     
 })
 
-router.get("/tasks", auth,async (req,res)=>{
+router.get("/tasks", auth, async (req,res)=>{
+    const match = {};
+
+    if(req.query.completed)
+    {
+        match.completed = req.query.completed === 'true';
+    }
+    //console.log("WE are matched",match);
     try{
         // const tasks = await Task.find({});
-        await req.user.populate("tasks").execPopulate();
-        console.log(req.user);
-        res.send( { user :req.user, tasks: req.user.tasks } );
+        // await req.user.populate("tasks").execPopulate();
+        await req.user.populate({
+            path : 'tasks', 
+            match
+        }).execPopulate();
+
+        res.send( { tasks: req.user.tasks } );
     }
     catch(e)
     {
