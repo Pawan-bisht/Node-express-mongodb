@@ -1,9 +1,28 @@
 const express =require("express");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
 const authMiddleware = require("../middleware/auth");
 const router = express.Router();
 const User = require("../models/user");
 
+
+const upload = multer({
+    dest : "avatar",
+    limits : {
+        fileSize:1000000
+    },
+    fileFilter(req, file, cb)
+    {
+        if(!file.originalname.endsWith(".pdf"))
+        {
+            return cb(new Error("Please upload a PDF!"));
+        }
+        cb()
+        //cb(new Error("File must be in pdf"))
+        //cb(null or undfined, true)
+        //cb(null or undefined, false)
+    }
+})
 
 router.post("/user",async (req,res)=>{
    
@@ -167,5 +186,7 @@ router.delete("/users", authMiddleware, async(req,res)=>{
     }
 })
 
-
+router.post('/users/me/avatar', upload.single("avatar"), (req,res)=>{
+    res.send();
+})
 module.exports = router;

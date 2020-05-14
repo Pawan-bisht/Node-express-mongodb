@@ -38,9 +38,17 @@ router.post("/task", auth, async (req,res)=>{
     
 })
 
+//  GET /tasks?completed=true
+//  GET /tasks?limit=10 & skip=20     PAGINATION
+//  GET /tasks?sortBy=createdAt_asc
 router.get("/tasks", auth, async (req,res)=>{
     const match = {};
-
+    const sort = {};
+    if(req.query.sortBy)
+    {
+        const parts = req.query.sortBy.split(':');
+        sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+    }
     if(req.query.completed)
     {
         match.completed = req.query.completed === 'true';
@@ -49,9 +57,19 @@ router.get("/tasks", auth, async (req,res)=>{
     try{
         // const tasks = await Task.find({});
         // await req.user.populate("tasks").execPopulate();
+
         await req.user.populate({
             path : 'tasks', 
-            match
+            match,
+            options:{
+                limit : parseInt(req.query.limit),
+                skip : parseInt(req.query.skip),
+                sort
+                // sort:{
+                //     createdAt : -1,   // -1 for descending and +1 for ascending
+                //     completed : -1    // -1 for  for true +1 for  false
+                // }
+            }
         }).execPopulate();
 
         res.send( { tasks: req.user.tasks } );
