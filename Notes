@@ -6,5 +6,8 @@ Never Do this
         db.collection.findOne({_id:ObjectId("efesesffsgrf2325sdefwe")})
         It will show the relevant result
 
+When using avatar we see that type of avatar is Buffer in db
+To access that buffer string in html,  we need to write like this
 
+<img src="data:image/jpg;base64, <buffer-string> " />
 

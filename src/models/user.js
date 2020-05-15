@@ -48,7 +48,10 @@ const userSchema = new mongoose.Schema({
             type:String,
             required:true
         }
-    }]
+    }],
+    avatar :{
+        type : Buffer   //For binary data we want to access to
+    }
 } ,
     {
         timestamps:true
@@ -72,6 +75,7 @@ userSchema.methods.toJSON = function()
     let userObject = user.toObject();
     delete userObject.password;
     delete userObject.tokens;
+    delete userObject.avatar;
     // user.password = undefined;
     // user.tokens = undefined;
     return userObject;
