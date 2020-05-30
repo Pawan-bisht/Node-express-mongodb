@@ -11,3 +11,7 @@ To access that buffer string in html,  we need to write like this
 
 <img src="data:image/jpg;base64, <buffer-string> " />
 
+
+for Sending Email
+We use " Send Grid "
+
