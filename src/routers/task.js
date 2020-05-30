@@ -1,30 +1,29 @@
 const express = require("express");
-const Task    = require("../models/task");
-const router  = express.Router();
-const auth    = require("../middleware/auth");
+const Task = require("../models/task");
+const router = express.Router();
+const auth = require("../middleware/auth");
 
-router.post("/task", auth, async (req,res)=>{
+router.post("/task", auth, async (req, res) => {
     // let task = new Task(req.body);
-    
+
     //As the await resolve our promise for us We dont need to explicitly resolve it
     //So now that we have this in place we have refactor it out they need to use 
     //extra callbacks for all of
 
     //our functions.
-    
+
     const task = new Task({
         ...req.body,
-        owner : req.user._id
+        owner: req.user._id
     })
 
-    try{
+    try {
         await task.save();
-        res.status(201).send(task);        
-    } catch(e)
-    {
+        res.status(201).send(task);
+    } catch (e) {
         res.status(400).send(e);
     }
-    
+
 
     // task.save()
     // .then(data=>{
@@ -35,35 +34,33 @@ router.post("/task", auth, async (req,res)=>{
     //     res.status(400);
     //     res.send(err);
     // })
-    
+
 })
 
 //  GET /tasks?completed=true
 //  GET /tasks?limit=10 & skip=20     PAGINATION
 //  GET /tasks?sortBy=createdAt_asc
-router.get("/tasks", auth, async (req,res)=>{
+router.get("/tasks", auth, async (req, res) => {
     const match = {};
     const sort = {};
-    if(req.query.sortBy)
-    {
+    if (req.query.sortBy) {
         const parts = req.query.sortBy.split(':');
         sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
     }
-    if(req.query.completed)
-    {
+    if (req.query.completed) {
         match.completed = req.query.completed === 'true';
     }
     //console.log("WE are matched",match);
-    try{
+    try {
         // const tasks = await Task.find({});
         // await req.user.populate("tasks").execPopulate();
 
         await req.user.populate({
-            path : 'tasks', 
+            path: 'tasks',
             match,
-            options:{
-                limit : parseInt(req.query.limit),
-                skip : parseInt(req.query.skip),
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
                 sort
                 // sort:{
                 //     createdAt : -1,   // -1 for descending and +1 for ascending
@@ -72,10 +69,10 @@ router.get("/tasks", auth, async (req,res)=>{
             }
         }).execPopulate();
 
-        res.send( { tasks: req.user.tasks } );
-    }
-    catch(e)
-    {
+        res.send({
+            tasks: req.user.tasks
+        });
+    } catch (e) {
         res.status(500).send(e);
     }
     // Task.find({})
@@ -87,20 +84,20 @@ router.get("/tasks", auth, async (req,res)=>{
     // })
 })
 
-router.get("/task/:id", auth, async (req,res)=>{
+router.get("/task/:id", auth, async (req, res) => {
     let _id = req.params.id;
 
-    try{
+    try {
         //const task = await Task.findById({_id});
-        const task = await Task.findOne({ _id, owner : req.user._id})
-        if(!task)
-        {
+        const task = await Task.findOne({
+            _id,
+            owner: req.user._id
+        })
+        if (!task) {
             return res.status(404).send();
         }
         res.send(task);
-    }
-    catch(e)
-    {
+    } catch (e) {
         res.status(400).send(e);
     }
     // Task.findById({_id})
@@ -115,49 +112,53 @@ router.get("/task/:id", auth, async (req,res)=>{
     // })
 })
 
-router.patch("/tasks/:id", auth, async (req,res)=>{
-        let _id = req.params.id;
-        let updates = Object.keys(req.body);
-        const allowedUpdates = ["completed", "description"];
-        let isValid = updates.every(update=>allowedUpdates.includes(update));
-        if(!isValid)
-            return res.status(400).send({e :"INVALID UPDATES"});
-        try{
-            //let task = await Task.findByIdAndUpdate(_id,req.body,{ new:true, runValidators:true});
-            const task = await Task.findOne({ _id, owner : req.user._id});
-                        
-            if(!task)
-                return res.status(404).send();
-            
-            updates.forEach((update)=>{
-                task[update] = req.body[update];
-                });
-            
-            await task.save();
-        
-            res.send(task);    
-        }
-        catch(e)
-        {
-            res.status(500).send(e);
-        }    
+router.patch("/tasks/:id", auth, async (req, res) => {
+    let _id = req.params.id;
+    let updates = Object.keys(req.body);
+    const allowedUpdates = ["completed", "description"];
+    let isValid = updates.every(update => allowedUpdates.includes(update));
+    if (!isValid)
+        return res.status(400).send({
+            e: "INVALID UPDATES"
+        });
+    try {
+        //let task = await Task.findByIdAndUpdate(_id,req.body,{ new:true, runValidators:true});
+        const task = await Task.findOne({
+            _id,
+            owner: req.user._id
+        });
+
+        if (!task)
+            return res.status(404).send();
+
+        updates.forEach((update) => {
+            task[update] = req.body[update];
+        });
+
+        await task.save();
+
+        res.send(task);
+    } catch (e) {
+        res.status(500).send(e);
+    }
 })
 
-router.delete("/tasks/:id", auth, async( req,res)=>{
+router.delete("/tasks/:id", auth, async (req, res) => {
     let _id = req.params.id;
-    try{
+    try {
         // let task = await Task.findByIdAndDelete(_id);
-        let task = await Task.findOneAndDelete({ _id, owner: req.user._id});
-        if(!task)
+        let task = await Task.findOneAndDelete({
+            _id,
+            owner: req.user._id
+        });
+        if (!task)
             return res.status(404).send();
-        res.send(task);  
-    }
-    catch(e)
-    {
+        res.send(task);
+    } catch (e) {
         console.log(e);
         res.status(500).send(e);
     }
-    
+
 })
 
 module.exports = router;

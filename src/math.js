@@ -11,6 +11,14 @@ const celsiusToFahrenheit = (temp) => {
     return (temp * 1.8) + 32
 }
 
+const add = (a, b) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(a + b);
+        }, 2000);
+    });
+}
+
 //
 // Goal: Test temperature conversion functions
 //
@@ -21,5 +29,6 @@ const celsiusToFahrenheit = (temp) => {
 module.exports = {
     calculateTip,
     celsiusToFahrenheit,
-    fahrenheitToCelsius
+    fahrenheitToCelsius,
+    add
 }

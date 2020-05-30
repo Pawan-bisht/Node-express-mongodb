@@ -5,36 +5,36 @@ require("./db/mongoose");
 
 const app = express();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // app.use((req, res, next) =>{
 //     return res.status(503).send("Our Site is in a mintinence phase!!!");
-   
+
 // })
 
 const multer = require("multer");
 const upload = multer({
     dest: "images",
-    limits : {
-        fileSize : 1000000
+    limits: {
+        fileSize: 1000000
     },
-    fileFilter(req, file, cb)
-    {
-        if(!file.originalname.match(/\.(doc | docx)$/))
-        {
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(doc | docx)$/)) {
             return cb(new Error("Please upload a word document"));
         }
     }
 })
 
-const errorHandler = (req,res,next)=>{
+const errorHandler = (req, res, next) => {
     throw new Error("Error!!!");
 }
 
-app.post("/upload", upload.single("upload"), (req, res)=>{
+app.post("/upload", upload.single("upload"), (req, res) => {
     res.send();
-},(error, req, res, next)=>{
-    res.status(400).send({error : error.message});
+}, (error, req, res, next) => {
+    res.status(400).send({
+        error: error.message
+    });
 })
 
 app.use(express.json());
@@ -71,8 +71,8 @@ app.use(taskRouter);
 
 // myFunction();
 
-app.listen(port,()=>{
-    console.log("server running at ",port);
+app.listen(port, () => {
+    console.log("server running at ", port);
 });
 
 

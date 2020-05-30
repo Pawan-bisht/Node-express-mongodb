@@ -1,38 +1,55 @@
 // const mongodb = require("mongodb");
 // const mongoClient = mongodb.mongoClient;     //Used to connect with our mongo database
 
-const { MongoClient, ObjectID } = require("mongodb"); 
+const {
+    MongoClient,
+    ObjectID
+} = require("mongodb");
 let id = new ObjectID();
 console.log(id);
 console.log(id.getTimestamp())
+//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
+const connectionURL = process.env.MONGODB_CONNECION_URI; //URL for connection
+const databaseName = process.env.DATABASE_NAME; // Database name to connect with
 
-const connectionURL = 'mongodb://127.0.0.1:27017';      //URL for connection
-const databaseName = "task-manager";                    // Database name to connect with
-
-MongoClient.connect(connectionURL,{ useNewUrlParser:true, useUnifiedTopology:true},(error,client)=>{      //Async operation to connect with database
-    if(error)
-    {
+MongoClient.connect(connectionURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}, (error, client) => { //Async operation to connect with database
+    if (error) {
         return console.log("Unable to Connect with database!!!");
     }
-    const db = client.db(databaseName);       //Get the reference of created  database
-    
-    db.collection('users').findOne({age:{$gt:23}},{limit:10},(error,result)=>{
-        if(error)
+    const db = client.db(databaseName); //Get the reference of created  database
+
+    db.collection('users').findOne({
+        age: {
+            $gt: 23
+        }
+    }, {
+        limit: 10
+    }, (error, result) => {
+        if (error)
             return console.log(error);
-        
+
         console.log(result);
     })
 
-    db.collection('users').find({age:{$gt:23}}).toArray((error,res)=>{
-        if(error)
-        return console.log(error);
+    db.collection('users').find({
+        age: {
+            $gt: 23
+        }
+    }).toArray((error, res) => {
+        if (error)
+            return console.log(error);
         console.log(res);
     });
-    
 
-    db.collection('users').deleteOne({name:"Vikram"})
-    .then(data=>console.log(data.deletedCount))
-    .catch(err=>console.log(err));
+
+    db.collection('users').deleteOne({
+            name: "Vikram"
+        })
+        .then(data => console.log(data.deletedCount))
+        .catch(err => console.log(err));
 
 
     // db.collection('tasks').updateMany({completed:false},{$set:{completed:true}})
@@ -42,12 +59,12 @@ MongoClient.connect(connectionURL,{ useNewUrlParser:true, useUnifiedTopology:tru
     // .catch(err=>{
     //     console.log(err);
     // })
-    
+
     //db.collection('users').updateOne({age:60},{$set:{age:65}}).then(data=>console.log(data)).catch((err)=>console.log(err))
-    
-    
+
+
     // db.collection('users').insertOne({
-        
+
     //     name:"Vikram",
     //     age:43
     // },(error,result)=>{
@@ -57,7 +74,7 @@ MongoClient.connect(connectionURL,{ useNewUrlParser:true, useUnifiedTopology:tru
     // })
 
 
-    
+
     // db.collection('users').insertMany([{
     //     name:"Ritu Bisht",
     //     age:27
