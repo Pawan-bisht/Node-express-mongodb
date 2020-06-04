@@ -50,8 +50,8 @@ test("Should signup a new user", async () => {
     })
 })
 
-test("should login existing user", async () => {
 
+test("should login existing user", async () => {
     const response = await request(app).post('/users/login').send({
             email: userOne.email,
             password: userOne.password
@@ -91,7 +91,7 @@ test("should delete account for user", async () => {
         .send()
         .expect(200)
     console.log("should delete", response.body)
-    const user = await User.findById(response.body.user._id);
+    const user = await User.findById(userOneId);
     expect(user).toBeNull()
 })
 
@@ -100,4 +100,50 @@ test("should not delete account for unauthenticated user", async () => {
         .delete('/users')
         .send()
         .expect(401)
+})
+
+test("should upload avatar image", async () => {
+    console.log("we are in avatar")
+    await request(app)
+        .post('/users/me/avatar')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .attach('avatar', 'tests/fixtures/node-course-images/profile-pic.jpg')
+        .expect(200)
+
+    const user = await User.findById(userOneId)
+    expect(user.avatar).toEqual(expect.any(Buffer))
+})
+
+
+test("should update a valid user fields", async () => {
+    const response = await request(app)
+        .patch('/users')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            name: "Darth vador"
+        })
+        .expect(200)
+
+
+    const user = await User.findById(userOneId);
+    expect(user.name).toBe("Darth vador")
+})
+
+test("Should not update a invalid user field", async () => {
+    await request(app)
+        .patch('/users')
+        .send({
+            name: "Kaliya"
+        })
+        .expect(401)
+})
+
+test("Should not udpdate the valid users invalid fields", async () => {
+    const response = await request(app)
+        .patch('/users')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            height: 200
+
+        }).expect(400)
 })

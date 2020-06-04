@@ -2,6 +2,10 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const authMiddleware = require("../middleware/auth");
+const {
+    sendWelcomeEmail,
+    sendCancelationEmail
+} = require('../emails/account')
 const router = express.Router();
 const sharp = require("sharp");
 const User = require("../models/user");
@@ -28,6 +32,7 @@ router.post("/user", async (req, res) => {
 
     let user = new User(req.body);
     try {
+        sendWelcomeEmail(user.email, user.name);
         const token = await user.generateAuthToken();
         console.log(jwt.verify(token, process.env.JWT_SECRET_KEY));
         res.status(201).send({
@@ -179,6 +184,7 @@ router.delete("/users", authMiddleware, async (req, res) => {
         // res.send(user);
 
         await req.user.remove();
+        sendCancelationEmail(req.user.email, req.user.name);
         res.send({
             user: req.user
         });
