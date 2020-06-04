@@ -62,27 +62,27 @@ test("should login existing user", async () => {
     expect(response.body.token).toBe(user.tokens[1].token)
 })
 
-// test("Should not login nonexistent user", async () => {
-//     await request(app).post('/users/login').send({
-//         email: "mike@gmail.com",
-//         password: "Samsung$123"
-//     }).expect(400)
-// })
+test("Should not login nonexistent user", async () => {
+    await request(app).post('/users/login').send({
+        email: "mike@gmail.com",
+        password: "Samsung$123"
+    }).expect(400)
+})
 
-// test("should get profile for user", async () => {
-//     await request(app)
-//         .get('/user')
-//         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
-//         .send()
-//         .expect(200)
-// })
+test("should get profile for user", async () => {
+    await request(app)
+        .get('/user')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200)
+})
 
-// test("should not get profile for unauthenticated user", async () => {
-//     await request(app)
-//         .get('/user')
-//         .send()
-//         .expect(401)
-// })
+test("should not get profile for unauthenticated user", async () => {
+    await request(app)
+        .get('/user')
+        .send()
+        .expect(401)
+})
 
 test("should delete account for user", async () => {
     const response = await request(app)
@@ -95,9 +95,9 @@ test("should delete account for user", async () => {
     expect(user).toBeNull()
 })
 
-// test("should not delete account for unauthenticated user", async () => {
-//     await request(app)
-//         .delete('/users')
-//         .send()
-//         .expect(401)
-// })
+test("should not delete account for unauthenticated user", async () => {
+    await request(app)
+        .delete('/users')
+        .send()
+        .expect(401)
+})
