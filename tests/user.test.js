@@ -1,28 +1,26 @@
 const request = require('supertest');
 const app = require("../src/app");
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 const User = require("../src/models/user");
+const {
+    userOne,
+    userOneId,
+    setupDatabase
+} = require("./fixtures/db")
+// let userOneId = new mongoose.Types.ObjectId();
+// let userOne = {
+//     _id: userOneId,
+//     name: "Hanuman",
+//     email: "mike@gmail.com",
+//     password: "Samsung$1234",
+//     tokens: [{
+//         token: jwt.sign({
+//             _id: userOneId._id
+//         }, process.env.JWT_SECRET_KEY)
+//     }]
+// }
 
-let userOneId = new mongoose.Types.ObjectId();
-let userOne = {
-    _id: userOneId,
-    name: "Hanuman",
-    email: "mike@gmail.com",
-    password: "Samsung$1234",
-    tokens: [{
-        token: jwt.sign({
-            _id: userOneId._id
-        }, process.env.JWT_SECRET_KEY)
-    }]
-}
 
-
-beforeEach(async () => {
-
-    await User.deleteMany()
-    await new User(userOne).save();
-})
+beforeEach(setupDatabase)
 
 // // afterEach(() => {
 // //     console.log("After Each")
@@ -144,6 +142,5 @@ test("Should not udpdate the valid users invalid fields", async () => {
         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
         .send({
             height: 200
-
         }).expect(400)
 })

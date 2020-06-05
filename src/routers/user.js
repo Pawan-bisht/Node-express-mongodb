@@ -150,7 +150,6 @@ router.get("/users", authMiddleware, async (req, res) => {
 router.patch("/users", authMiddleware, async (req, res) => {
     let updates = Object.keys(req.body);
     const allowedUpdates = ["name", "age", "email", "password"];
-    console.log(updates);
     let isValid = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValid)
